@@ -42,6 +42,7 @@ app:
   embedding:
     provider: ${EMBEDDING_PROVIDER:gemini}
     model: ${EMBEDDING_MODEL:text-embedding-004}
+    api-key: ${GEMINI_API_KEY:}
   retrieval:
     vector-top-k: ${VECTOR_TOP_K:10}
     rerank-top-k: ${RERANK_TOP_K:5}
