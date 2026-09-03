@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: music-knowledge-postgres
+    environment:
+      POSTGRES_DB: music_knowledge_assistant
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d music_knowledge_assistant"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: music-knowledge-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/music_knowledge_assistant
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+      SERVER_PORT: 8080
+      LLM_PROVIDER: gemini
+      EMBEDDING_PROVIDER: gemini
+      LLM_MODEL: gemini-2.0-flash
+      EMBEDDING_MODEL: text-embedding-004
+    ports:
+      - '8080:8080'
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+volumes:
+  postgres_data:

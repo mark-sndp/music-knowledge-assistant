@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: music-knowledge-assistant
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/music_knowledge_assistant}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+server:
+  port: ${SERVER_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+app:
+  llm:
+    provider: ${LLM_PROVIDER:gemini}
+    model: ${LLM_MODEL:gemini-2.0-flash}
+  embedding:
+    provider: ${EMBEDDING_PROVIDER:gemini}
+    model: ${EMBEDDING_MODEL:text-embedding-004}
+  retrieval:
+    vector-top-k: ${VECTOR_TOP_K:10}
+    rerank-top-k: ${RERANK_TOP_K:5}
+    grounding-threshold: ${GROUNDING_THRESHOLD:0.65}
+  chunking:
+    size: ${CHUNK_SIZE:800}
+    overlap: ${CHUNK_OVERLAP:120}
