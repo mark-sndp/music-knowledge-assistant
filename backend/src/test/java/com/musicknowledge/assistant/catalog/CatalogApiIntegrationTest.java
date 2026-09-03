@@ -3,8 +3,10 @@ package com.musicknowledge.assistant.catalog;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.musicknowledge.assistant.catalog.domain.Artist;
+import com.musicknowledge.assistant.catalog.domain.Album;
 import com.musicknowledge.assistant.catalog.domain.Genre;
 import com.musicknowledge.assistant.catalog.domain.Track;
+import com.musicknowledge.assistant.catalog.repository.AlbumRepository;
 import com.musicknowledge.assistant.catalog.repository.ArtistRepository;
 import com.musicknowledge.assistant.catalog.repository.GenreRepository;
 import com.musicknowledge.assistant.catalog.repository.TrackRepository;
@@ -43,6 +45,9 @@ class CatalogApiIntegrationTest {
 
     @Autowired
     private ArtistRepository artistRepository;
+
+    @Autowired
+    private AlbumRepository albumRepository;
 
     @Autowired
     private GenreRepository genreRepository;
@@ -85,5 +90,21 @@ class CatalogApiIntegrationTest {
         Track result = trackRepository.save(track);
 
         assertThat(result.getGenres()).extracting(Genre::getName).contains("Progressive Rock");
+    }
+
+    @Test
+    void albumsEndpointReturnsPersistedAlbums() throws Exception {
+        Artist artist = new Artist();
+        artist.setName("Radiohead");
+        Artist savedArtist = artistRepository.save(artist);
+
+        Album album = new Album();
+        album.setTitle("OK Computer");
+        album.setArtist(savedArtist);
+        albumRepository.save(album);
+
+        mockMvc.perform(get("/api/v1/albums").accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(result -> assertThat(result.getResponse().getContentAsString()).contains("OK Computer"));
     }
 }
