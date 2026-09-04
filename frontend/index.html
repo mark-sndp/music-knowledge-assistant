@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f0e8">
+  <title>Studio Notes | Music Knowledge Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="wordmark" href="."><span class="mark">MK</span><span>studio notes</span></a>
+      <div class="status"><span class="status-dot"></span><span>Knowledge base online</span></div>
+    </header>
+
+    <section class="workspace" aria-labelledby="page-title">
+      <div class="intro">
+        <p class="kicker">Music knowledge assistant <span>/</span> 04</p>
+        <h1 id="page-title">Ask a better<br><em>music question.</em></h1>
+        <p class="lede">Explore the stories, records, and chart moments behind the songs that shaped the decade.</p>
+      </div>
+
+      <form id="query-form" class="query-panel">
+        <label for="question">Your question</label>
+        <textarea id="question" name="question" rows="4" maxlength="1000" required placeholder="Why was Another Day in Paradise significant in 1989?"></textarea>
+        <div class="query-actions">
+          <span id="char-count" class="mono">0 / 1000</span>
+          <button id="ask-button" type="submit"><span>Ask the archive</span><span class="arrow">&rarr;</span></button>
+        </div>
+      </form>
+
+      <div id="message" class="message" role="status" aria-live="polite"></div>
+
+      <section id="answer-section" class="answer-section" hidden aria-labelledby="answer-heading">
+        <div class="section-label"><span>Response</span><span id="source-count" class="mono"></span></div>
+        <article class="answer-card">
+          <h2 id="answer-heading">Grounded answer</h2>
+          <p id="answer-text"></p>
+        </article>
+        <div class="section-label sources-heading"><span>Sources</span><span class="mono">verified context</span></div>
+        <div id="sources" class="sources"></div>
+      </section>
+    </section>
+
+    <footer class="footer"><span>Built for curious listening.</span><span class="mono">Gemini + pgvector</span></footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

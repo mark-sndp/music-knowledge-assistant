@@ -36,6 +36,8 @@ management:
         enabled: true
 
 app:
+  web:
+    allowed-origin: ${ALLOWED_ORIGIN:http://localhost:4173}
   llm:
     provider: ${LLM_PROVIDER:gemini}
     model: ${LLM_MODEL:gemini-2.0-flash}

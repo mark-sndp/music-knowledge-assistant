@@ -33,6 +33,14 @@ docker compose up --build -d
 curl http://localhost:8080/actuator/health
 ```
 
+4. Start the query workspace from Git Bash:
+
+```bash
+cd frontend && python -m http.server 4173
+```
+
+Open `http://localhost:4173` in a browser. The frontend calls the backend query API at `http://localhost:8080`.
+
 ## Technology stack
 
 - Java 21
