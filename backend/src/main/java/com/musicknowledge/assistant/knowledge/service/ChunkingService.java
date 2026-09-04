@@ -39,6 +39,7 @@ public class ChunkingService {
             .orElseThrow(() -> new IllegalArgumentException("Knowledge source not found: " + sourceId));
 
         chunkRepository.deleteAllByKnowledgeSourceId(sourceId);
+        chunkRepository.flush();
         String content = source.getContent() == null ? "" : source.getContent().trim();
         if (content.isEmpty()) {
             return List.of();
