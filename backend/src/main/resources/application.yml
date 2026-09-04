@@ -39,6 +39,7 @@ app:
   llm:
     provider: ${LLM_PROVIDER:gemini}
     model: ${LLM_MODEL:gemini-2.0-flash}
+    api-key: ${GEMINI_API_KEY:}
   embedding:
     provider: ${EMBEDDING_PROVIDER:gemini}
     model: ${EMBEDDING_MODEL:text-embedding-004}
