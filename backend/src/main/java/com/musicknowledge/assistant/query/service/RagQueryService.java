@@ -15,7 +15,12 @@ public class RagQueryService {
     }
 
     public QueryResult answer(String question) {
-        List<AnswerGenerator.RetrievedSource> sources = retrievalService.retrieve(question);
+        List<AnswerGenerator.RetrievedSource> sources;
+        try {
+            sources = retrievalService.retrieve(question);
+        } catch (RuntimeException exception) {
+            return new QueryResult("I could not retrieve grounded information for that question.", List.of());
+        }
         String answer;
         if (sources.isEmpty()) {
             answer = "I could not find enough grounded information to answer that question.";
