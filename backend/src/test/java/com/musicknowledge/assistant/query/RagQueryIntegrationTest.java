@@ -31,6 +31,7 @@ import org.springframework.web.context.WebApplicationContext;
     "spring.jpa.hibernate.ddl-auto=create-drop",
     "app.embedding.provider=fake",
     "app.llm.provider=fake",
+    "app.retrieval.native-vector=false",
     "app.retrieval.vector-top-k=3"
 })
 @Transactional

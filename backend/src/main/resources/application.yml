@@ -46,6 +46,7 @@ app:
     api-key: ${GEMINI_API_KEY:}
   retrieval:
     vector-top-k: ${VECTOR_TOP_K:10}
+    native-vector: ${NATIVE_VECTOR_RETRIEVAL:true}
     rerank-top-k: ${RERANK_TOP_K:5}
     grounding-threshold: ${GROUNDING_THRESHOLD:0.65}
   chunking:

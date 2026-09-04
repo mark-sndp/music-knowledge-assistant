@@ -13,21 +13,27 @@ public class JsonEmbeddingRetrievalService {
 
     private final DocumentChunkRepository chunkRepository;
     private final EmbeddingQueryProvider queryProvider;
+    private final PgVectorStore pgVectorStore;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final int topK;
 
     public JsonEmbeddingRetrievalService(
         DocumentChunkRepository chunkRepository,
         EmbeddingQueryProvider queryProvider,
+        org.springframework.beans.factory.ObjectProvider<PgVectorStore> pgVectorStoreProvider,
         @Value("${app.retrieval.vector-top-k:10}") int topK
     ) {
         this.chunkRepository = chunkRepository;
         this.queryProvider = queryProvider;
+        this.pgVectorStore = pgVectorStoreProvider.getIfAvailable();
         this.topK = topK;
     }
 
     public List<AnswerGenerator.RetrievedSource> retrieve(String question) {
         List<Float> queryEmbedding = queryProvider.embed(question);
+        if (pgVectorStore != null) {
+            return pgVectorStore.retrieve(queryEmbedding, topK);
+        }
         return chunkRepository.findAll().stream()
             .filter(chunk -> chunk.getEmbeddingStatus() == DocumentChunk.EmbeddingStatus.READY)
             .map(chunk -> toRetrievedSource(chunk, queryEmbedding))

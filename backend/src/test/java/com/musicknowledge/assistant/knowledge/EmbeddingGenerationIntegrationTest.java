@@ -27,7 +27,8 @@ import org.springframework.web.context.WebApplicationContext;
 @ActiveProfiles("test")
 @TestPropertySource(properties = {
     "spring.jpa.hibernate.ddl-auto=create-drop",
-    "app.embedding.provider=fake"
+    "app.embedding.provider=fake",
+    "app.retrieval.native-vector=false"
 })
 @Transactional
 class EmbeddingGenerationIntegrationTest {
