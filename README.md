@@ -33,13 +33,15 @@ docker compose up --build -d
 curl http://localhost:8080/actuator/health
 ```
 
-4. Start the query workspace from Git Bash:
+4. Open the query workspace at `http://localhost:4173`. It is started by Docker Compose with the backend.
+
+To run only the static frontend from Git Bash instead:
 
 ```bash
 cd frontend && python -m http.server 4173
 ```
 
-Open `http://localhost:4173` in a browser. The frontend calls the backend query API at `http://localhost:8080`.
+The frontend calls the backend query API at `http://localhost:8080`.
 
 ## Technology stack
 
