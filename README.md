@@ -14,9 +14,9 @@ The application follows a modular monolith architecture to keep the implementati
 
 ## Current milestone
 
-This repository is currently in Milestone 3: knowledge-source ingestion foundation.
+This repository is currently in Milestone 4: retrieval and RAG query flow.
 
-Completed stages include the repository/tooling foundation and the music catalog persistence and read API. The current stage stores authoritative knowledge sources so later chunking, embedding, and retrieval stages have a stable input boundary.
+Completed stages include the repository/tooling foundation, music catalog and Billboard import, knowledge-source ingestion, document chunking, Gemini embedding generation, native pgvector retrieval, and query-flow evaluation hardening.
 
 ## Local setup
 
