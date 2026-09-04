@@ -32,7 +32,8 @@ import org.springframework.web.context.WebApplicationContext;
     "app.embedding.provider=fake",
     "app.llm.provider=fake",
     "app.retrieval.native-vector=false",
-    "app.retrieval.vector-top-k=3"
+    "app.retrieval.vector-top-k=3",
+    "app.retrieval.grounding-threshold=0.75"
 })
 @Transactional
 class RagQueryIntegrationTest {
@@ -45,6 +46,9 @@ class RagQueryIntegrationTest {
 
     @Autowired
     private DocumentChunkRepository chunkRepository;
+
+    @Autowired
+    private FakeAnswerGenerator fakeAnswerGenerator;
 
     private MockMvc mockMvc;
 
@@ -82,12 +86,60 @@ class RagQueryIntegrationTest {
             });
     }
 
+    @Test
+    void blankQuestionIsRejected() throws Exception {
+        mockMvc.perform(post("/api/v1/query")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"question\":\"   \"}"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void queryReturnsGroundedNoResultWhenNoReadyChunksExist() throws Exception {
+        mockMvc.perform(post("/api/v1/query")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"question\":\"What is not in the catalog?\"}"))
+            .andExpect(status().isOk())
+            .andExpect(result -> {
+                String body = result.getResponse().getContentAsString();
+                assertThat(body).contains("I could not find enough grounded information");
+                assertThat(body).contains("\"sources\":[]");
+            });
+    }
+
+    @Test
+    void answerProviderFailureReturnsGroundedFallback() throws Exception {
+        KnowledgeSource source = new KnowledgeSource();
+        source.setTitle("Wikipedia: fallback source");
+        source.setSourceType("WIKIPEDIA");
+        source.setUri("https://en.wikipedia.org/wiki/Fallback");
+        source.setContent("Fallback source content.");
+        KnowledgeSource savedSource = sourceRepository.save(source);
+
+        DocumentChunk chunk = new DocumentChunk();
+        chunk.setKnowledgeSource(savedSource);
+        chunk.setChunkIndex(0);
+        chunk.setContent(source.getContent());
+        chunk.setEmbeddingStatus(DocumentChunk.EmbeddingStatus.READY);
+        chunk.setEmbeddingModel("fake-embedding-v1");
+        chunk.setEmbeddingJson("[1.0,0.0,0.0]");
+        chunkRepository.save(chunk);
+        fakeAnswerGenerator.fail = true;
+
+        mockMvc.perform(post("/api/v1/query")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"question\":\"What is the fallback?\"}"))
+            .andExpect(status().isOk())
+            .andExpect(result -> assertThat(result.getResponse().getContentAsString())
+                .contains("I could not generate a grounded answer", "Fallback"));
+    }
+
     @TestConfiguration
     static class FakeQueryConfiguration {
 
         @Bean
-        AnswerGenerator answerGenerator() {
-            return (question, sources) -> "The song was released in 1985.";
+        FakeAnswerGenerator answerGenerator() {
+            return new FakeAnswerGenerator();
         }
 
         @Bean
@@ -103,6 +155,19 @@ class RagQueryIntegrationTest {
                     return List.of(1.0f, 0.0f, 0.0f);
                 }
             };
+        }
+    }
+
+    static class FakeAnswerGenerator implements AnswerGenerator {
+
+        private boolean fail;
+
+        @Override
+        public String generate(String question, List<RetrievedSource> sources) {
+            if (fail) {
+                throw new IllegalStateException("synthetic answer failure");
+            }
+            return "The song was released in 1985.";
         }
     }
 }

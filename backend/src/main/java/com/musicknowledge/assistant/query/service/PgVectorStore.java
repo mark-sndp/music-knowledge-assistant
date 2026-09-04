@@ -20,12 +20,15 @@ public class PgVectorStore {
         jdbcTemplate.update("UPDATE document_chunks SET embedding_vector = ?::vector WHERE id = ?", vector, chunkId);
     }
 
-    public List<AnswerGenerator.RetrievedSource> retrieve(List<Float> queryEmbedding, int topK) {
+    public List<AnswerGenerator.RetrievedSource> retrieve(
+        List<Float> queryEmbedding, int topK, double groundingThreshold
+    ) {
         String vector = queryEmbedding.toString().replace(" ", "");
         return jdbcTemplate.query(
             "SELECT s.title, s.uri, c.content, 1 - (c.embedding_vector <=> ?::vector) AS score "
                 + "FROM document_chunks c JOIN knowledge_sources s ON s.id = c.knowledge_source_id "
                 + "WHERE c.embedding_status = 'READY' AND c.embedding_vector IS NOT NULL "
+                + "AND 1 - (c.embedding_vector <=> ?::vector) >= ? "
                 + "ORDER BY c.embedding_vector <=> ?::vector LIMIT ?",
             (resultSet, rowNumber) -> new AnswerGenerator.RetrievedSource(
                 resultSet.getString("title"),
@@ -33,7 +36,7 @@ public class PgVectorStore {
                 resultSet.getString("content"),
                 resultSet.getDouble("score")
             ),
-            vector, vector, topK
+            vector, groundingThreshold, vector, topK
         );
     }
 }

@@ -16,28 +16,31 @@ public class JsonEmbeddingRetrievalService {
     private final PgVectorStore pgVectorStore;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final int topK;
+    private final double groundingThreshold;
 
     public JsonEmbeddingRetrievalService(
         DocumentChunkRepository chunkRepository,
         EmbeddingQueryProvider queryProvider,
         org.springframework.beans.factory.ObjectProvider<PgVectorStore> pgVectorStoreProvider,
-        @Value("${app.retrieval.vector-top-k:10}") int topK
+        @Value("${app.retrieval.vector-top-k:10}") int topK,
+        @Value("${app.retrieval.grounding-threshold:0.65}") double groundingThreshold
     ) {
         this.chunkRepository = chunkRepository;
         this.queryProvider = queryProvider;
         this.pgVectorStore = pgVectorStoreProvider.getIfAvailable();
         this.topK = topK;
+        this.groundingThreshold = groundingThreshold;
     }
 
     public List<AnswerGenerator.RetrievedSource> retrieve(String question) {
         List<Float> queryEmbedding = queryProvider.embed(question);
         if (pgVectorStore != null) {
-            return pgVectorStore.retrieve(queryEmbedding, topK);
+            return pgVectorStore.retrieve(queryEmbedding, topK, groundingThreshold);
         }
         return chunkRepository.findAll().stream()
             .filter(chunk -> chunk.getEmbeddingStatus() == DocumentChunk.EmbeddingStatus.READY)
             .map(chunk -> toRetrievedSource(chunk, queryEmbedding))
-            .filter(source -> source.score() > 0)
+            .filter(source -> source.score() >= groundingThreshold)
             .sorted(Comparator.comparingDouble(AnswerGenerator.RetrievedSource::score).reversed())
             .limit(topK)
             .toList();
