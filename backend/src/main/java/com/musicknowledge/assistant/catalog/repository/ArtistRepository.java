@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ArtistRepository extends JpaRepository<Artist, Long> {
+
+	java.util.Optional<Artist> findByNameIgnoreCase(String name);
 }
