@@ -36,14 +36,19 @@ management:
         enabled: true
 
 app:
+  web:
+    allowed-origin: ${ALLOWED_ORIGIN:http://localhost:4173}
   llm:
     provider: ${LLM_PROVIDER:gemini}
     model: ${LLM_MODEL:gemini-2.0-flash}
+    api-key: ${GEMINI_API_KEY:}
   embedding:
     provider: ${EMBEDDING_PROVIDER:gemini}
     model: ${EMBEDDING_MODEL:text-embedding-004}
+    api-key: ${GEMINI_API_KEY:}
   retrieval:
     vector-top-k: ${VECTOR_TOP_K:10}
+    native-vector: ${NATIVE_VECTOR_RETRIEVAL:true}
     rerank-top-k: ${RERANK_TOP_K:5}
     grounding-threshold: ${GROUNDING_THRESHOLD:0.65}
   chunking:

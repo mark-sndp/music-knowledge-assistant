@@ -1,0 +1,18 @@
+-------------------------------------------------------------------------------
+Test set: com.musicknowledge.assistant.query.RagQueryIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 2.777 s <<< FAILURE! -- in com.musicknowledge.assistant.query.RagQueryIntegrationTest
+com.musicknowledge.assistant.query.RagQueryIntegrationTest.answerProviderFailureReturnsGroundedFallback -- Time elapsed: 0.041 s <<< FAILURE!
+java.lang.AssertionError: 
+
+Expecting actual:
+  "{"answer":"The song was released in 1985.","sources":[{"title":"Wikipedia: fallback source","uri":"https://en.wikipedia.org/wiki/Fallback","content":"Fallback source content.","score":1.0}]}"
+to contain:
+  ["I could not generate a grounded answer", "Fallback"]
+but could not find:
+  ["I could not generate a grounded answer"]
+ 
+	at com.musicknowledge.assistant.query.RagQueryIntegrationTest.lambda$answerProviderFailureReturnsGroundedFallback$2(RagQueryIntegrationTest.java:134)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:212)
+	at com.musicknowledge.assistant.query.RagQueryIntegrationTest.answerProviderFailureReturnsGroundedFallback(RagQueryIntegrationTest.java:133)
+

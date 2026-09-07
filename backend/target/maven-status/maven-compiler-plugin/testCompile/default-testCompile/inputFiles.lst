@@ -1,0 +1,9 @@
+C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\test\java\com\musicknowledge\assistant\catalog\BillboardImportIntegrationTest.java
+C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\test\java\com\musicknowledge\assistant\catalog\CatalogApiIntegrationTest.java
+C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\test\java\com\musicknowledge\assistant\knowledge\DocumentChunkingIntegrationTest.java
+C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\test\java\com\musicknowledge\assistant\knowledge\EmbeddingGenerationIntegrationTest.java
+C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\test\java\com\musicknowledge\assistant\knowledge\KnowledgeSourceApiIntegrationTest.java
+C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\test\java\com\musicknowledge\assistant\query\QueryProviderFailureIntegrationTest.java
+C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\test\java\com\musicknowledge\assistant\query\RagEvaluationControllerIntegrationTest.java
+C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\test\java\com\musicknowledge\assistant\query\RagEvaluationIntegrationTest.java
+C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\test\java\com\musicknowledge\assistant\query\RagQueryIntegrationTest.java

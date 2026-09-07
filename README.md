@@ -1,6 +1,6 @@
 # Music Knowledge Assistant
 
-A production-oriented music knowledge assistant built with Java, Spring Boot, PostgreSQL, pgvector, and a retrieval-augmented generation (RAG) layer.
+A music knowledge assistant built with Java, Spring Boot, PostgreSQL, pgvector, and a retrieval-augmented generation (RAG) layer.
 
 ## Overview
 
@@ -14,26 +14,81 @@ The application follows a modular monolith architecture to keep the implementati
 
 ## Current milestone
 
-This repository is currently in Milestone 4: retrieval and RAG query flow.
+Completed stages include the repository/tooling foundation, music catalog and Billboard import, Wikipedia knowledge-source ingestion, document chunking, Gemini embedding generation, native pgvector retrieval, query-flow hardening and evaluation, and the retro query workspace.
 
-Completed stages include the repository/tooling foundation, music catalog and Billboard import, knowledge-source ingestion, document chunking, Gemini embedding generation, native pgvector retrieval, and query-flow evaluation hardening.
+## Architecture
+
+```mermaid
+flowchart LR
+	Browser[Retro query workspace\nNginx :4173] -->|POST /api/v1/query| API[Spring Boot modular monolith\n:8080]
+	API --> Catalog[Catalog module\nartists, albums, tracks, Billboard]
+	API --> Knowledge[Knowledge module\nsources, chunks, embeddings]
+	API --> Query[Query module\nretrieval, grounding, RAG]
+	API --> Observability[AOP method logging\nJSON Logback events]
+	Catalog --> DB[(PostgreSQL + pgvector)]
+	Knowledge --> DB
+	Query --> DB
+	Knowledge --> Gemini[Google AI Studio Gemini\nembeddings]
+	Query --> Gemini
+	DB --> Migrations[Flyway migrations]
+```
+
+The backend is a modular monolith. PostgreSQL stores structured catalog data, knowledge sources, chunks, and native `vector` embeddings. Gemini is accessed behind provider interfaces, so tests can use deterministic fake providers. The frontend is a static Nginx site served by Docker Compose.
+
+## Request flow
+
+```mermaid
+sequenceDiagram
+	actor User
+	participant UI as Frontend :4173
+	participant API as QueryController
+	participant RAG as RagQueryService
+	participant Embed as EmbeddingProvider
+	participant Search as pgvector retrieval
+	participant LLM as Gemini answer provider
+	participant DB as PostgreSQL
+
+	User->>UI: Enter music question
+	UI->>API: POST /api/v1/query
+	API->>RAG: Validate and forward question
+	RAG->>Embed: Embed question
+	Embed-->>RAG: Query vector
+	RAG->>Search: Retrieve READY chunks above threshold
+	Search->>DB: Cosine-distance vector query
+	DB-->>Search: Ranked chunks and source metadata
+	Search-->>RAG: Grounded source context
+	RAG->>LLM: Generate answer from context
+	LLM-->>RAG: Grounded answer
+	RAG-->>API: Answer plus citations and scores
+	API-->>UI: JSON response
+	UI-->>User: Answer and source cards
+```
+
+Every public application method is intercepted by `MethodLoggingAspect`. JSON Logback events include the event type, class, method, outcome, duration, and exception type when applicable. Arguments and return values are intentionally excluded from logs.
 
 ## Local setup
 
-1. Copy `.env.example` to `.env` and adjust values if needed.
-2. Start the local stack:
+Prerequisites:
+
+- Java 21 and Maven 3.8+
+- Docker Desktop with Compose
+- Git Bash
+- `curl` and `jq` for the sample ingestion script
+
+1. Copy `.env.example` to `.env` and set `GEMINI_API_KEY` if you want real Gemini embeddings and answers.
+2. Start the complete local stack:
 
 ```bash
 docker compose up --build -d
 ```
 
-3. Confirm the application is healthy:
+3. Confirm the backend is healthy:
 
 ```bash
 curl http://localhost:8080/actuator/health
 ```
 
-4. Open the query workspace at `http://localhost:4173`. It is started by Docker Compose with the backend.
+4. Open the query workspace at `http://localhost:4173`. It is started by Docker Compose after the backend becomes healthy.
 
 To run only the static frontend from Git Bash instead:
 
@@ -42,6 +97,58 @@ cd frontend && python -m http.server 4173
 ```
 
 The frontend calls the backend query API at `http://localhost:8080`.
+
+To stop the stack:
+
+```bash
+docker compose down
+```
+
+To stop it and remove the local PostgreSQL volume:
+
+```bash
+docker compose down -v
+```
+
+## Sample data ingestion
+
+The Billboard fixture is [data/billboard-1980-1989-sample.csv](data/billboard-1980-1989-sample.csv). The backend accepts it through `POST /api/v1/catalog/imports/billboard` with `Content-Type: text/csv`.
+
+The five Wikipedia summaries that correspond to the sample tracks are in [data/wikipedia-billboard-sample.json](data/wikipedia-billboard-sample.json). With the stack running, ingest and chunk them from Git Bash:
+
+```bash
+bash scripts/ingest-wikipedia-billboard-sample.sh
+```
+
+The script is idempotent by source URI. It creates or reuses each knowledge source and prepares its chunks. Embedding generation requires `GEMINI_API_KEY`.
+
+## API surface
+
+| Endpoint | Purpose |
+| --- | --- |
+| `GET /actuator/health` | Application, database, liveness, and readiness health |
+| `POST /api/v1/query` | Ask a grounded music question |
+| `POST /api/v1/evaluations/rag` | Evaluate answer and citation pass rates |
+| `GET /api/v1/artists` | List catalog artists |
+| `GET /api/v1/albums` | List catalog albums |
+| `GET /api/v1/tracks` | List catalog tracks |
+| `GET /api/v1/genres` | List catalog genres |
+| `POST /api/v1/catalog/imports/billboard` | Import Billboard CSV rows |
+| `GET,POST /api/v1/knowledge-sources` | List or create knowledge sources |
+| `POST /api/v1/knowledge-sources/{id}/chunks` | Prepare document chunks |
+| `POST /api/v1/knowledge-sources/{id}/embeddings` | Generate embeddings for chunks |
+
+## Development checks
+
+Run the backend test suite and package build:
+
+```bash
+cd backend
+mvn clean test
+mvn -DskipTests package
+```
+
+The suite covers catalog import, knowledge ingestion, chunking, embeddings, pgvector-compatible retrieval fallback, query hardening, evaluation, and the evaluation endpoint.
 
 ## Technology stack
 
@@ -72,6 +179,6 @@ music-knowledge-assistant/
 
 ## Notes
 
-- Keycloak authentication is intentionally deferred from the MVP.
-- Frontend scaffolding is deferred until the RAG/UI milestones are reached.
+- The native retrieval path uses pgvector in PostgreSQL; H2-based tests use the JSON embedding fallback.
 - Google AI Studio Gemini is the intended provider for the first production-ready integration.
+- Wikipedia fixture content is concise, source-linked, and marked for CC BY-SA 4.0 attribution. Full article text is not copied into the repository.
