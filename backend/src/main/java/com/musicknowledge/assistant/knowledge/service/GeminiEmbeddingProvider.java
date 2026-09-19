@@ -5,12 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.MediaType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 @Component
 @ConditionalOnProperty(name = "app.embedding.provider", havingValue = "gemini", matchIfMissing = true)
 public class GeminiEmbeddingProvider implements EmbeddingProvider {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GeminiEmbeddingProvider.class);
 
     private final RestClient restClient;
     private final String model;
@@ -37,6 +41,7 @@ public class GeminiEmbeddingProvider implements EmbeddingProvider {
             throw new IllegalStateException("GEMINI_API_KEY is required for Gemini embeddings");
         }
 
+        LOGGER.info("Requesting Gemini embedding (model={}, textLength={})", model, text.length());
         String response = restClient.post()
             .uri(uriBuilder -> uriBuilder
                 .path("/v1beta/models/{model}:batchEmbedContents")
@@ -54,7 +59,9 @@ public class GeminiEmbeddingProvider implements EmbeddingProvider {
             if (!values.isArray() || values.isEmpty()) {
                 throw new IllegalStateException("Gemini returned no embedding");
             }
-            return objectMapper.readerForListOf(Float.class).readValue(values.toString());
+            List<Float> embedding = objectMapper.readerForListOf(Float.class).readValue(values.toString());
+            LOGGER.info("Received Gemini embedding (model={}, dimensions={})", model, embedding.size());
+            return embedding;
         } catch (Exception exception) {
             if (exception instanceof IllegalStateException illegalStateException) {
                 throw illegalStateException;

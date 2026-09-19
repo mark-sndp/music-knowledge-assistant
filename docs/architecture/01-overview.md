@@ -26,7 +26,7 @@ flowchart TB
 	CATALOG[Catalog module\nJPA + import service]
 	KNOWLEDGE[Knowledge module\nsources + chunks + embeddings]
 	QUERY[Query module\nretrieval + RAG + evaluation]
-	LOGGING[MethodLoggingAspect\nJSON Logback]
+	LOGGING[Layer-specific INFO logs]
 	POSTGRES[(PostgreSQL + pgvector)]
 	GEMINI[Gemini provider interfaces]
 	FLYWAY[Flyway migrations]

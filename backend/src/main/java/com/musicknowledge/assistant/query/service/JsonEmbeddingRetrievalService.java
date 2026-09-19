@@ -5,11 +5,15 @@ import com.musicknowledge.assistant.knowledge.domain.DocumentChunk;
 import com.musicknowledge.assistant.knowledge.repository.DocumentChunkRepository;
 import java.util.Comparator;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class JsonEmbeddingRetrievalService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonEmbeddingRetrievalService.class);
 
     private final DocumentChunkRepository chunkRepository;
     private final EmbeddingQueryProvider queryProvider;
@@ -33,17 +37,26 @@ public class JsonEmbeddingRetrievalService {
     }
 
     public List<AnswerGenerator.RetrievedSource> retrieve(String question) {
+        LOGGER.info("Creating query embedding (questionLength={})", question.length());
         List<Float> queryEmbedding = queryProvider.embed(question);
+        LOGGER.info("Created query embedding (dimensions={})", queryEmbedding.size());
         if (pgVectorStore != null) {
-            return pgVectorStore.retrieve(queryEmbedding, topK, groundingThreshold);
+            LOGGER.info("Searching pgvector (topK={}, groundingThreshold={})", topK, groundingThreshold);
+            List<AnswerGenerator.RetrievedSource> sources = pgVectorStore.retrieve(
+                queryEmbedding, topK, groundingThreshold);
+            LOGGER.info("pgvector returned {} source(s)", sources.size());
+            return sources;
         }
-        return chunkRepository.findAll().stream()
+        LOGGER.info("Searching JSON embedding fallback (topK={}, groundingThreshold={})", topK, groundingThreshold);
+        List<AnswerGenerator.RetrievedSource> sources = chunkRepository.findAll().stream()
             .filter(chunk -> chunk.getEmbeddingStatus() == DocumentChunk.EmbeddingStatus.READY)
             .map(chunk -> toRetrievedSource(chunk, queryEmbedding))
             .filter(source -> source.score() >= groundingThreshold)
             .sorted(Comparator.comparingDouble(AnswerGenerator.RetrievedSource::score).reversed())
             .limit(topK)
             .toList();
+        LOGGER.info("JSON embedding fallback returned {} source(s)", sources.size());
+        return sources;
     }
 
     private AnswerGenerator.RetrievedSource toRetrievedSource(DocumentChunk chunk, List<Float> queryEmbedding) {

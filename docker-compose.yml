@@ -33,8 +33,9 @@ services:
       SERVER_PORT: 8080
       LLM_PROVIDER: gemini
       EMBEDDING_PROVIDER: gemini
-      LLM_MODEL: gemini-2.0-flash
-      EMBEDDING_MODEL: text-embedding-004
+      LLM_MODEL: ${LLM_MODEL:-gemini-3.6-flash}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-gemini-embedding-001}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:?Set GEMINI_API_KEY in .env}
     ports:
       - '8080:8080'
     healthcheck:

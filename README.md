@@ -24,7 +24,7 @@ flowchart LR
 	API --> Catalog[Catalog module\nartists, albums, tracks, Billboard]
 	API --> Knowledge[Knowledge module\nsources, chunks, embeddings]
 	API --> Query[Query module\nretrieval, grounding, RAG]
-	API --> Observability[AOP method logging\nJSON Logback events]
+	API --> Observability[Layer-specific INFO logs]
 	Catalog --> DB[(PostgreSQL + pgvector)]
 	Knowledge --> DB
 	Query --> DB
@@ -64,7 +64,7 @@ sequenceDiagram
 	UI-->>User: Answer and source cards
 ```
 
-Every public application method is intercepted by `MethodLoggingAspect`. JSON Logback events include the event type, class, method, outcome, duration, and exception type when applicable. Arguments and return values are intentionally excluded from logs.
+Query processing logs meaningful INFO events across the controller, embedding provider, retrieval store, and answer provider. They include model names, dimensions, source counts, and timing context without recording question text, source content, answers, or credentials.
 
 ## Local setup
 

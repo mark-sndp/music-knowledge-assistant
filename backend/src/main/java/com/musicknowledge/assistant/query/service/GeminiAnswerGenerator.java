@@ -5,12 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.MediaType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 @Component
 @ConditionalOnProperty(name = "app.llm.provider", havingValue = "gemini", matchIfMissing = true)
 public class GeminiAnswerGenerator implements AnswerGenerator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GeminiAnswerGenerator.class);
 
     private final RestClient restClient;
     private final String model;
@@ -39,6 +43,8 @@ public class GeminiAnswerGenerator implements AnswerGenerator {
         String prompt = "Answer the question using only the provided sources. If the sources do not support an answer, say so. "
             + "Do not invent facts.\n\nQuestion: " + question + "\n\nSources:\n" + context;
 
+        LOGGER.info("Requesting Gemini answer (model={}, questionLength={}, sourceCount={})",
+            model, question.length(), sources.size());
         String response = restClient.post()
             .uri(uriBuilder -> uriBuilder.path("/v1beta/models/{model}:generateContent")
                 .queryParam("key", apiKey).build(model))
@@ -53,7 +59,9 @@ public class GeminiAnswerGenerator implements AnswerGenerator {
             if (!text.isTextual() || text.asText().isBlank()) {
                 throw new IllegalStateException("Gemini returned no answer");
             }
-            return text.asText();
+            String answer = text.asText();
+            LOGGER.info("Received Gemini answer (model={}, answerLength={})", model, answer.length());
+            return answer;
         } catch (Exception exception) {
             if (exception instanceof IllegalStateException illegalStateException) {
                 throw illegalStateException;
