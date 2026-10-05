@@ -32,13 +32,13 @@ com\musicknowledge\assistant\knowledge\service\EmbeddingGenerationService.class
 com\musicknowledge\assistant\knowledge\service\GeminiEmbeddingProvider.class
 com\musicknowledge\assistant\knowledge\controller\EmbeddingController.class
 com\musicknowledge\assistant\knowledge\domain\DocumentChunk$EmbeddingStatus.class
-com\musicknowledge\assistant\common\MethodLoggingAspect.class
 com\musicknowledge\assistant\query\service\RagEvaluationService$EvaluationReport.class
 com\musicknowledge\assistant\catalog\domain\Track.class
 com\musicknowledge\assistant\catalog\repository\GenreRepository.class
 com\musicknowledge\assistant\catalog\service\BillboardImportService$BillboardRow.class
 com\musicknowledge\assistant\query\service\GeminiAnswerGenerator.class
 com\musicknowledge\assistant\catalog\domain\Rating.class
+com\musicknowledge\assistant\query\service\KeywordRetrievalService.class
 com\musicknowledge\assistant\catalog\domain\Genre.class
 com\musicknowledge\assistant\knowledge\domain\KnowledgeSource.class
 com\musicknowledge\assistant\query\service\DefaultAnswerGenerator.class

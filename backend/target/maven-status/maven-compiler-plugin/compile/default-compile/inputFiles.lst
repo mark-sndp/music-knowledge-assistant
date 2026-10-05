@@ -14,7 +14,6 @@ C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\main\java\com\musicknowle
 C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\main\java\com\musicknowledge\assistant\catalog\repository\TrackRepository.java
 C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\main\java\com\musicknowledge\assistant\catalog\service\BillboardImportService.java
 C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\main\java\com\musicknowledge\assistant\common\HealthController.java
-C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\main\java\com\musicknowledge\assistant\common\MethodLoggingAspect.java
 C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\main\java\com\musicknowledge\assistant\common\WebConfig.java
 C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\main\java\com\musicknowledge\assistant\knowledge\controller\DocumentChunkController.java
 C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\main\java\com\musicknowledge\assistant\knowledge\controller\EmbeddingController.java
@@ -35,6 +34,7 @@ C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\main\java\com\musicknowle
 C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\main\java\com\musicknowledge\assistant\query\service\EmbeddingQueryProvider.java
 C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\main\java\com\musicknowledge\assistant\query\service\GeminiAnswerGenerator.java
 C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\main\java\com\musicknowledge\assistant\query\service\JsonEmbeddingRetrievalService.java
+C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\main\java\com\musicknowledge\assistant\query\service\KeywordRetrievalService.java
 C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\main\java\com\musicknowledge\assistant\query\service\PgVectorStore.java
 C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\main\java\com\musicknowledge\assistant\query\service\ProviderBackedEmbeddingQueryProvider.java
 C:\Dev\mark-sndp\music-knowledge-assistant\backend\src\main\java\com\musicknowledge\assistant\query\service\RagEvaluationService.java

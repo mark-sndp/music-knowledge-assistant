@@ -18,6 +18,7 @@ public class JsonEmbeddingRetrievalService {
     private final DocumentChunkRepository chunkRepository;
     private final EmbeddingQueryProvider queryProvider;
     private final PgVectorStore pgVectorStore;
+    private final KeywordRetrievalService keywordRetrievalService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final int topK;
     private final double groundingThreshold;
@@ -26,12 +27,14 @@ public class JsonEmbeddingRetrievalService {
         DocumentChunkRepository chunkRepository,
         EmbeddingQueryProvider queryProvider,
         org.springframework.beans.factory.ObjectProvider<PgVectorStore> pgVectorStoreProvider,
+        KeywordRetrievalService keywordRetrievalService,
         @Value("${app.retrieval.vector-top-k:10}") int topK,
         @Value("${app.retrieval.grounding-threshold:0.65}") double groundingThreshold
     ) {
         this.chunkRepository = chunkRepository;
         this.queryProvider = queryProvider;
         this.pgVectorStore = pgVectorStoreProvider.getIfAvailable();
+        this.keywordRetrievalService = keywordRetrievalService;
         this.topK = topK;
         this.groundingThreshold = groundingThreshold;
     }
@@ -45,7 +48,7 @@ public class JsonEmbeddingRetrievalService {
             List<AnswerGenerator.RetrievedSource> sources = pgVectorStore.retrieve(
                 queryEmbedding, topK, groundingThreshold);
             LOGGER.info("pgvector returned {} source(s)", sources.size());
-            return sources;
+            return sources.isEmpty() ? keywordFallback(question) : sources;
         }
         LOGGER.info("Searching JSON embedding fallback (topK={}, groundingThreshold={})", topK, groundingThreshold);
         List<AnswerGenerator.RetrievedSource> sources = chunkRepository.findAll().stream()
@@ -56,6 +59,13 @@ public class JsonEmbeddingRetrievalService {
             .limit(topK)
             .toList();
         LOGGER.info("JSON embedding fallback returned {} source(s)", sources.size());
+        return sources.isEmpty() ? keywordFallback(question) : sources;
+    }
+
+    private List<AnswerGenerator.RetrievedSource> keywordFallback(String question) {
+        LOGGER.info("No semantic sources found; searching keyword fallback (topK={})", topK);
+        List<AnswerGenerator.RetrievedSource> sources = keywordRetrievalService.retrieve(question, topK);
+        LOGGER.info("Keyword fallback returned {} source(s)", sources.size());
         return sources;
     }
 

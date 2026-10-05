@@ -108,6 +108,35 @@ class RagQueryIntegrationTest {
     }
 
     @Test
+    void queryFallsBackToKeywordSearchWhenSemanticRetrievalHasNoMatch() throws Exception {
+        KnowledgeSource source = new KnowledgeSource();
+        source.setTitle("Wikipedia: Electric Light Orchestra");
+        source.setSourceType("WIKIPEDIA");
+        source.setUri("https://example.test/electric-light-orchestra");
+        source.setContent("Electric Light Orchestra combined rock music with orchestral arrangements.");
+        KnowledgeSource savedSource = sourceRepository.save(source);
+
+        DocumentChunk chunk = new DocumentChunk();
+        chunk.setKnowledgeSource(savedSource);
+        chunk.setChunkIndex(0);
+        chunk.setContent(source.getContent());
+        chunk.setEmbeddingStatus(DocumentChunk.EmbeddingStatus.READY);
+        chunk.setEmbeddingModel("fake-embedding-v1");
+        chunk.setEmbeddingJson("[0.0,1.0,0.0]");
+        chunkRepository.save(chunk);
+
+        mockMvc.perform(post("/api/v1/query")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"question\":\"What is Electric Light Orchestra?\"}"))
+            .andExpect(status().isOk())
+            .andExpect(result -> {
+                String body = result.getResponse().getContentAsString();
+                assertThat(body).contains("The song was released in 1985.");
+                assertThat(body).contains("electric-light-orchestra");
+            });
+    }
+
+    @Test
     void answerProviderFailureReturnsGroundedFallback() throws Exception {
         KnowledgeSource source = new KnowledgeSource();
         source.setTitle("Wikipedia: fallback source");

@@ -12,7 +12,7 @@ This project implements a modular monolith for a music knowledge assistant. It c
 ## Key design choices
 
 - PostgreSQL stores the music catalog and structured facts.
-- pgvector stores embeddings and knowledge chunks.
+- pgvector stores embeddings and knowledge chunks. Retrieval uses vector similarity first and title/chunk keyword matching as a fallback when no semantic result qualifies.
 - The LLM is used for synthesis, explanation, and generation, not direct database access.
 - Retrieval is hybrid: SQL + vector + reranking.
 - The system is intentionally modular rather than split into entity microservices.

@@ -40,11 +40,11 @@ app:
     allowed-origin: ${ALLOWED_ORIGIN:http://localhost:4173}
   llm:
     provider: ${LLM_PROVIDER:gemini}
-    model: ${LLM_MODEL:gemini-2.0-flash}
+    model: ${LLM_MODEL:gemini-3.6-flash}
     api-key: ${GEMINI_API_KEY:}
   embedding:
     provider: ${EMBEDDING_PROVIDER:gemini}
-    model: ${EMBEDDING_MODEL:text-embedding-004}
+    model: ${EMBEDDING_MODEL:gemini-embedding-001}
     api-key: ${GEMINI_API_KEY:}
   retrieval:
     vector-top-k: ${VECTOR_TOP_K:10}

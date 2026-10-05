@@ -33,7 +33,7 @@ flowchart LR
 	DB --> Migrations[Flyway migrations]
 ```
 
-The backend is a modular monolith. PostgreSQL stores structured catalog data, knowledge sources, chunks, and native `vector` embeddings. Gemini is accessed behind provider interfaces, so tests can use deterministic fake providers. The frontend is a static Nginx site served by Docker Compose.
+The backend is a modular monolith. PostgreSQL stores structured catalog data, knowledge sources, chunks, and native `vector` embeddings. Retrieval uses vector similarity first, then falls back to keyword matching across source titles and chunk text when semantic retrieval finds no grounded source. Gemini is accessed behind provider interfaces, so tests can use deterministic fake providers. The frontend is a static Nginx site served by Docker Compose.
 
 ## Request flow
 
@@ -56,6 +56,7 @@ sequenceDiagram
 	RAG->>Search: Retrieve READY chunks above threshold
 	Search->>DB: Cosine-distance vector query
 	DB-->>Search: Ranked chunks and source metadata
+	RAG->>Search: Fall back to title and chunk keyword search when no vector result qualifies
 	Search-->>RAG: Grounded source context
 	RAG->>LLM: Generate answer from context
 	LLM-->>RAG: Grounded answer
@@ -63,6 +64,16 @@ sequenceDiagram
 	API-->>UI: JSON response
 	UI-->>User: Answer and source cards
 ```
+
+### Request flow, step by step
+
+1. **The user submits a question.** The query workspace sends the text as JSON (`{"question":"..."}`) to `POST /api/v1/query`. The API validates that the question is present and not blank; invalid requests are rejected before retrieval begins.
+2. **The backend creates a query embedding.** The retrieval service sends the question to the configured embedding provider and uses the resulting vector to search for relevant, grounded document chunks.
+3. **Semantic retrieval selects candidate context.** With the default native-vector configuration, PostgreSQL/pgvector considers chunks whose embedding status is `READY` and whose similarity score meets the configured grounding threshold. It orders results by similarity and returns at most the configured `topK` count. If native pgvector is unavailable, the JSON-embedding path computes cosine similarity in the application and applies the same threshold and result limit.
+4. **Keyword search is the fallback.** If semantic retrieval returns no qualifying chunks, the service searches source titles and chunk text using normalized question keywords. It ranks matching chunks, giving title matches extra weight, and returns up to `topK` results. This fallback is not used to supplement a non-empty semantic result set.
+5. **The backend decides whether an answer can be generated.** If retrieval itself fails, the API returns a recovery message with an empty source list. If both semantic and keyword retrieval return no sources, it returns a not-enough-grounding message and does not call the answer generator.
+6. **The answer provider synthesizes from retrieved sources.** When sources are available, the provider receives the original question and each source's title, URI, and chunk content. Gemini is instructed to use only this context, avoid inventing facts, and say when the sources do not support an answer. If generation fails, the API returns a generation-failure message while preserving the retrieved sources.
+7. **The UI presents the answer and evidence.** A successful request returns JSON with an `answer` and a `sources` array. Each source includes its title, URI, content, and retrieval score. The workspace displays the answer and source cards with links and match scores, so users can inspect the material used to ground the response.
 
 Query processing logs meaningful INFO events across the controller, embedding provider, retrieval store, and answer provider. They include model names, dimensions, source counts, and timing context without recording question text, source content, answers, or credentials.
 
@@ -179,6 +190,6 @@ music-knowledge-assistant/
 
 ## Notes
 
+- This project is intended for personal educational purposes only and should not be used for any other purpose.
 - The native retrieval path uses pgvector in PostgreSQL; H2-based tests use the JSON embedding fallback.
-- Google AI Studio Gemini is the intended provider for the first production-ready integration.
 - Wikipedia fixture content is concise, source-linked, and marked for CC BY-SA 4.0 attribution. Full article text is not copied into the repository.
