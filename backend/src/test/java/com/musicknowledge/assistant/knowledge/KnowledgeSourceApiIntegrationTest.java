@@ -25,24 +25,25 @@ import org.springframework.web.context.WebApplicationContext;
 @Transactional
 class KnowledgeSourceApiIntegrationTest {
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
+  @Autowired private WebApplicationContext webApplicationContext;
 
-    @Autowired
-    private KnowledgeSourceRepository knowledgeSourceRepository;
+  @Autowired private KnowledgeSourceRepository knowledgeSourceRepository;
 
-    private MockMvc mockMvc;
+  private MockMvc mockMvc;
 
-    @BeforeEach
-    void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-    }
+  @BeforeEach
+  void setUp() {
+    mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+  }
 
-    @Test
-    void createSourcePersistsAndListsKnowledgeSource() throws Exception {
-        mockMvc.perform(post("/api/v1/knowledge-sources")
+  @Test
+  void createSourcePersistsAndListsKnowledgeSource() throws Exception {
+    mockMvc
+        .perform(
+            post("/api/v1/knowledge-sources")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""
+                .content(
+                    """
                     {
                       "title": "The Beatles biography",
                       "sourceType": "BOOK",
@@ -50,27 +51,30 @@ class KnowledgeSourceApiIntegrationTest {
                       "content": "The Beatles were an English rock band formed in Liverpool."
                     }
                     """))
-            .andExpect(status().isCreated());
+        .andExpect(status().isCreated());
 
-        assertThat(knowledgeSourceRepository.count()).isEqualTo(1);
+    assertThat(knowledgeSourceRepository.count()).isEqualTo(1);
 
-        mockMvc.perform(get("/api/v1/knowledge-sources").accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(result -> assertThat(result.getResponse().getContentAsString())
-                .contains("The Beatles biography", "BOOK"));
-    }
+    mockMvc
+        .perform(get("/api/v1/knowledge-sources").accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(
+            result ->
+                assertThat(result.getResponse().getContentAsString())
+                    .contains("The Beatles biography", "BOOK"));
+  }
 
-    @Test
-    void sourceRepositoryStoresAuthorityMetadata() {
-        KnowledgeSource source = new KnowledgeSource();
-        source.setTitle("Official artist archive");
-        source.setSourceType("OFFICIAL_SITE");
-        source.setUri("https://example.test/archive");
-        source.setContent("Verified artist history.");
-        source.setAuthority(5);
+  @Test
+  void sourceRepositoryStoresAuthorityMetadata() {
+    KnowledgeSource source = new KnowledgeSource();
+    source.setTitle("Official artist archive");
+    source.setSourceType("OFFICIAL_SITE");
+    source.setUri("https://example.test/archive");
+    source.setContent("Verified artist history.");
+    source.setAuthority(5);
 
-        KnowledgeSource saved = knowledgeSourceRepository.save(source);
+    KnowledgeSource saved = knowledgeSourceRepository.save(source);
 
-        assertThat(saved.getAuthority()).isEqualTo(5);
-    }
+    assertThat(saved.getAuthority()).isEqualTo(5);
+  }
 }

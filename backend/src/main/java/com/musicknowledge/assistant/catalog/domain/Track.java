@@ -21,103 +21,101 @@ import java.util.List;
 @Table(name = "tracks")
 public class Track {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false, length = 200)
-    private String title;
+  @Column(nullable = false, length = 200)
+  private String title;
 
-    @Column(nullable = false)
-    private Integer duration;
+  @Column(nullable = false)
+  private Integer duration;
 
-    @Column(name = "release_date")
-    private LocalDate releaseDate;
+  @Column(name = "release_date")
+  private LocalDate releaseDate;
 
-    @Column(length = 2000)
-    private String description;
+  @Column(length = 2000)
+  private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "album_id")
-    @JsonIgnore
-    private Album album;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "album_id")
+  @JsonIgnore
+  private Album album;
 
-    @ManyToMany
-    @JoinTable(
-        name = "track_genres",
-        joinColumns = @JoinColumn(name = "track_id"),
-        inverseJoinColumns = @JoinColumn(name = "genre_id")
-    )
-    private List<Genre> genres = new ArrayList<>();
+  @ManyToMany
+  @JoinTable(
+      name = "track_genres",
+      joinColumns = @JoinColumn(name = "track_id"),
+      inverseJoinColumns = @JoinColumn(name = "genre_id"))
+  private List<Genre> genres = new ArrayList<>();
 
-    @OneToMany(mappedBy = "track")
-    @JsonIgnore
-    private List<Rating> ratings = new ArrayList<>();
+  @OneToMany(mappedBy = "track")
+  @JsonIgnore
+  private List<Rating> ratings = new ArrayList<>();
 
-    public Track() {
-    }
+  public Track() {}
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public String getTitle() {
-        return title;
-    }
+  public String getTitle() {
+    return title;
+  }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-    public Integer getDuration() {
-        return duration;
-    }
+  public Integer getDuration() {
+    return duration;
+  }
 
-    public void setDuration(Integer duration) {
-        this.duration = duration;
-    }
+  public void setDuration(Integer duration) {
+    this.duration = duration;
+  }
 
-    public LocalDate getReleaseDate() {
-        return releaseDate;
-    }
+  public LocalDate getReleaseDate() {
+    return releaseDate;
+  }
 
-    public void setReleaseDate(LocalDate releaseDate) {
-        this.releaseDate = releaseDate;
-    }
+  public void setReleaseDate(LocalDate releaseDate) {
+    this.releaseDate = releaseDate;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public Album getAlbum() {
-        return album;
-    }
+  public Album getAlbum() {
+    return album;
+  }
 
-    public void setAlbum(Album album) {
-        this.album = album;
-    }
+  public void setAlbum(Album album) {
+    this.album = album;
+  }
 
-    public List<Genre> getGenres() {
-        return genres;
-    }
+  public List<Genre> getGenres() {
+    return genres;
+  }
 
-    public void setGenres(List<Genre> genres) {
-        this.genres = genres;
-    }
+  public void setGenres(List<Genre> genres) {
+    this.genres = genres;
+  }
 
-    public List<Rating> getRatings() {
-        return ratings;
-    }
+  public List<Rating> getRatings() {
+    return ratings;
+  }
 
-    public void setRatings(List<Rating> ratings) {
-        this.ratings = ratings;
-    }
+  public void setRatings(List<Rating> ratings) {
+    this.ratings = ratings;
+  }
 }

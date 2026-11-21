@@ -15,22 +15,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/query")
 public class QueryController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(QueryController.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(QueryController.class);
 
-    private final RagQueryService ragQueryService;
+  private final RagQueryService ragQueryService;
 
-    public QueryController(RagQueryService ragQueryService) {
-        this.ragQueryService = ragQueryService;
-    }
+  public QueryController(RagQueryService ragQueryService) {
+    this.ragQueryService = ragQueryService;
+  }
 
-    @PostMapping
-    public ResponseEntity<RagQueryService.QueryResult> query(@Valid @RequestBody QueryRequest request) {
-        LOGGER.info("Received query request (questionLength={})", request.question().length());
-        RagQueryService.QueryResult result = ragQueryService.answer(request.question());
-        LOGGER.info("Completed query request (sourceCount={})", result.sources().size());
-        return ResponseEntity.ok(result);
-    }
+  @PostMapping
+  public ResponseEntity<RagQueryService.QueryResult> query(
+      @Valid @RequestBody QueryRequest request) {
+    LOGGER.info("Received query request (questionLength={})", request.question().length());
+    RagQueryService.QueryResult result = ragQueryService.answer(request.question());
+    LOGGER.info("Completed query request (sourceCount={})", result.sources().size());
+    return ResponseEntity.ok(result);
+  }
 
-    public record QueryRequest(@NotBlank String question) {
-    }
+  public record QueryRequest(@NotBlank String question) {}
 }

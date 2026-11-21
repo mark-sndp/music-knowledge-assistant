@@ -16,25 +16,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/knowledge-sources")
 public class KnowledgeSourceController {
 
-    private final KnowledgeSourceRepository repository;
+  private final KnowledgeSourceRepository repository;
 
-    public KnowledgeSourceController(KnowledgeSourceRepository repository) {
-        this.repository = repository;
-    }
+  public KnowledgeSourceController(KnowledgeSourceRepository repository) {
+    this.repository = repository;
+  }
 
-    @GetMapping
-    public ResponseEntity<List<KnowledgeSource>> getSources() {
-        return ResponseEntity.ok(repository.findAll());
-    }
+  @GetMapping
+  public ResponseEntity<List<KnowledgeSource>> getSources() {
+    return ResponseEntity.ok(repository.findAll());
+  }
 
-    @PostMapping
-    public ResponseEntity<KnowledgeSource> createSource(@Valid @RequestBody KnowledgeSource source) {
-        if (source.getAuthority() == null) {
-            source.setAuthority(1);
-        }
-        if (source.getCreatedAt() == null) {
-            source.setCreatedAt(OffsetDateTime.now());
-        }
-        return ResponseEntity.status(201).body(repository.save(source));
+  @PostMapping
+  public ResponseEntity<KnowledgeSource> createSource(@Valid @RequestBody KnowledgeSource source) {
+    if (source.getAuthority() == null) {
+      source.setAuthority(1);
     }
+    if (source.getCreatedAt() == null) {
+      source.setCreatedAt(OffsetDateTime.now());
+    }
+    return ResponseEntity.status(201).body(repository.save(source));
+  }
 }

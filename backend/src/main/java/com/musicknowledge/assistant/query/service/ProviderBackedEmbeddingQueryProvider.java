@@ -7,14 +7,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProviderBackedEmbeddingQueryProvider implements EmbeddingQueryProvider {
 
-    private final EmbeddingProvider embeddingProvider;
+  private final EmbeddingProvider embeddingProvider;
 
-    public ProviderBackedEmbeddingQueryProvider(EmbeddingProvider embeddingProvider) {
-        this.embeddingProvider = embeddingProvider;
-    }
+  public ProviderBackedEmbeddingQueryProvider(EmbeddingProvider embeddingProvider) {
+    this.embeddingProvider = embeddingProvider;
+  }
 
-    @Override
-    public List<Float> embed(String text) {
-        return embeddingProvider.embed(text);
-    }
+  @Override
+  public List<Float> embed(String text) {
+    return embeddingProvider.embed(text);
+  }
 }

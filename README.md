@@ -155,9 +155,12 @@ Run the backend test suite and package build:
 
 ```bash
 cd backend
+mvn spotless:apply
 mvn clean test
 mvn -DskipTests package
 ```
+
+`mvn spotless:apply` removes unused imports and formats Java sources using Google Java Format. The formatting check also runs during `mvn verify`.
 
 The suite covers catalog import, knowledge ingestion, chunking, embeddings, pgvector-compatible retrieval fallback, query hardening, evaluation, and the evaluation endpoint.
 

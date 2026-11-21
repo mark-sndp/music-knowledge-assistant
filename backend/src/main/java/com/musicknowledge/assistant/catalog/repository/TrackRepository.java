@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TrackRepository extends JpaRepository<Track, Long> {
 
-	java.util.Optional<Track> findByTitleIgnoreCaseAndAlbumId(String title, Long albumId);
+  java.util.Optional<Track> findByTitleIgnoreCaseAndAlbumId(String title, Long albumId);
 }

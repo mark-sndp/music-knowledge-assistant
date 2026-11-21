@@ -16,45 +16,46 @@ import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@TestPropertySource(properties = {
-    "app.embedding.provider=fake",
-    "app.llm.provider=fake",
-    "app.retrieval.native-vector=false"
-})
+@TestPropertySource(
+    properties = {
+      "app.embedding.provider=fake",
+      "app.llm.provider=fake",
+      "app.retrieval.native-vector=false"
+    })
 class QueryProviderFailureIntegrationTest {
 
-    @Autowired
-    private RagQueryService queryService;
+  @Autowired private RagQueryService queryService;
 
-    @Test
-    void embeddingProviderFailureReturnsControlledResult() {
-        RagQueryService.QueryResult result = queryService.answer("Which source should be searched?");
+  @Test
+  void embeddingProviderFailureReturnsControlledResult() {
+    RagQueryService.QueryResult result = queryService.answer("Which source should be searched?");
 
-        assertThat(result.answer()).isEqualTo("I could not retrieve grounded information for that question.");
-        assertThat(result.sources()).isEmpty();
-    }
+    assertThat(result.answer())
+        .isEqualTo("I could not retrieve grounded information for that question.");
+    assertThat(result.sources()).isEmpty();
+  }
 
-    @TestConfiguration
-    static class FailingProviderConfiguration {
+  @TestConfiguration
+  static class FailingProviderConfiguration {
 
-        @Bean
-        EmbeddingProvider embeddingProvider() {
-            return new EmbeddingProvider() {
-                @Override
-                public String model() {
-                    return "failing-provider";
-                }
-
-                @Override
-                public List<Float> embed(String text) {
-                    throw new IllegalStateException("synthetic embedding outage");
-                }
-            };
+    @Bean
+    EmbeddingProvider embeddingProvider() {
+      return new EmbeddingProvider() {
+        @Override
+        public String model() {
+          return "failing-provider";
         }
 
-        @Bean
-        AnswerGenerator answerGenerator() {
-            return (question, sources) -> "This answer must not be generated.";
+        @Override
+        public List<Float> embed(String text) {
+          throw new IllegalStateException("synthetic embedding outage");
         }
+      };
     }
+
+    @Bean
+    AnswerGenerator answerGenerator() {
+      return (question, sources) -> "This answer must not be generated.";
+    }
+  }
 }

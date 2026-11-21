@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface EmbeddingProvider {
 
-    String model();
+  String model();
 
-    List<Float> embed(String text);
+  List<Float> embed(String text);
 }

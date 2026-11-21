@@ -15,21 +15,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/knowledge-sources/{sourceId}/chunks")
 public class DocumentChunkController {
 
-    private final ChunkingService chunkingService;
-    private final DocumentChunkRepository chunkRepository;
+  private final ChunkingService chunkingService;
+  private final DocumentChunkRepository chunkRepository;
 
-    public DocumentChunkController(ChunkingService chunkingService, DocumentChunkRepository chunkRepository) {
-        this.chunkingService = chunkingService;
-        this.chunkRepository = chunkRepository;
-    }
+  public DocumentChunkController(
+      ChunkingService chunkingService, DocumentChunkRepository chunkRepository) {
+    this.chunkingService = chunkingService;
+    this.chunkRepository = chunkRepository;
+  }
 
-    @PostMapping
-    public ResponseEntity<List<DocumentChunk>> prepareChunks(@PathVariable Long sourceId) {
-        return ResponseEntity.status(201).body(chunkingService.prepareChunks(sourceId));
-    }
+  @PostMapping
+  public ResponseEntity<List<DocumentChunk>> prepareChunks(@PathVariable Long sourceId) {
+    return ResponseEntity.status(201).body(chunkingService.prepareChunks(sourceId));
+  }
 
-    @GetMapping
-    public ResponseEntity<List<DocumentChunk>> getChunks(@PathVariable Long sourceId) {
-        return ResponseEntity.ok(chunkRepository.findAllByKnowledgeSourceIdOrderByChunkIndex(sourceId));
-    }
+  @GetMapping
+  public ResponseEntity<List<DocumentChunk>> getChunks(@PathVariable Long sourceId) {
+    return ResponseEntity.ok(chunkRepository.findAllByKnowledgeSourceIdOrderByChunkIndex(sourceId));
+  }
 }

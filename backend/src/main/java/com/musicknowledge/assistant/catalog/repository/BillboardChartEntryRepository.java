@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BillboardChartEntryRepository extends JpaRepository<BillboardChartEntry, Long> {
 
-    Optional<BillboardChartEntry> findByYearAndWeekAndRank(Integer year, Integer week, Integer rank);
+  Optional<BillboardChartEntry> findByYearAndWeekAndRank(Integer year, Integer week, Integer rank);
 }

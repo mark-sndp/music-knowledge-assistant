@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 @ConditionalOnMissingBean(AnswerGenerator.class)
 public class DefaultAnswerGenerator implements AnswerGenerator {
 
-    @Override
-    public String generate(String question, List<RetrievedSource> sources) {
-        return sources.getFirst().content();
-    }
+  @Override
+  public String generate(String question, List<RetrievedSource> sources) {
+    return sources.getFirst().content();
+  }
 }

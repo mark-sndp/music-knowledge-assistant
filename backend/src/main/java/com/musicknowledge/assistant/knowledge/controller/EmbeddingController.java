@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/knowledge-sources/{sourceId}/embeddings")
 public class EmbeddingController {
 
-    private final EmbeddingGenerationService embeddingGenerationService;
+  private final EmbeddingGenerationService embeddingGenerationService;
 
-    public EmbeddingController(EmbeddingGenerationService embeddingGenerationService) {
-        this.embeddingGenerationService = embeddingGenerationService;
-    }
+  public EmbeddingController(EmbeddingGenerationService embeddingGenerationService) {
+    this.embeddingGenerationService = embeddingGenerationService;
+  }
 
-    @PostMapping
-    public ResponseEntity<List<DocumentChunk>> generateEmbeddings(@PathVariable Long sourceId) {
-        return ResponseEntity.ok(embeddingGenerationService.generateForSource(sourceId));
-    }
+  @PostMapping
+  public ResponseEntity<List<DocumentChunk>> generateEmbeddings(@PathVariable Long sourceId) {
+    return ResponseEntity.ok(embeddingGenerationService.generateForSource(sourceId));
+  }
 }

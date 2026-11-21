@@ -12,16 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/evaluations/rag")
 public class RagEvaluationController {
 
-    private final RagEvaluationService evaluationService;
+  private final RagEvaluationService evaluationService;
 
-    public RagEvaluationController(RagEvaluationService evaluationService) {
-        this.evaluationService = evaluationService;
-    }
+  public RagEvaluationController(RagEvaluationService evaluationService) {
+    this.evaluationService = evaluationService;
+  }
 
-    @PostMapping
-    public ResponseEntity<RagEvaluationService.EvaluationReport> evaluate(
-        @RequestBody List<RagEvaluationService.EvaluationCase> cases
-    ) {
-        return ResponseEntity.ok(evaluationService.evaluate(cases));
-    }
+  @PostMapping
+  public ResponseEntity<RagEvaluationService.EvaluationReport> evaluate(
+      @RequestBody List<RagEvaluationService.EvaluationCase> cases) {
+    return ResponseEntity.ok(evaluationService.evaluate(cases));
+  }
 }

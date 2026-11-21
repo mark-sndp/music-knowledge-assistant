@@ -19,76 +19,75 @@ import java.util.List;
 @Table(name = "albums")
 public class Album {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false, length = 200)
-    private String title;
+  @Column(nullable = false, length = 200)
+  private String title;
 
-    @Column(name = "release_date")
-    private LocalDate releaseDate;
+  @Column(name = "release_date")
+  private LocalDate releaseDate;
 
-    @Column(name = "cover_art_url", length = 500)
-    private String coverArtUrl;
+  @Column(name = "cover_art_url", length = 500)
+  private String coverArtUrl;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "artist_id", nullable = false)
-    @JsonIgnore
-    private Artist artist;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "artist_id", nullable = false)
+  @JsonIgnore
+  private Artist artist;
 
-    @OneToMany(mappedBy = "album")
-    @JsonIgnore
-    private List<Track> tracks = new ArrayList<>();
+  @OneToMany(mappedBy = "album")
+  @JsonIgnore
+  private List<Track> tracks = new ArrayList<>();
 
-    public Album() {
-    }
+  public Album() {}
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public String getTitle() {
-        return title;
-    }
+  public String getTitle() {
+    return title;
+  }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-    public LocalDate getReleaseDate() {
-        return releaseDate;
-    }
+  public LocalDate getReleaseDate() {
+    return releaseDate;
+  }
 
-    public void setReleaseDate(LocalDate releaseDate) {
-        this.releaseDate = releaseDate;
-    }
+  public void setReleaseDate(LocalDate releaseDate) {
+    this.releaseDate = releaseDate;
+  }
 
-    public String getCoverArtUrl() {
-        return coverArtUrl;
-    }
+  public String getCoverArtUrl() {
+    return coverArtUrl;
+  }
 
-    public void setCoverArtUrl(String coverArtUrl) {
-        this.coverArtUrl = coverArtUrl;
-    }
+  public void setCoverArtUrl(String coverArtUrl) {
+    this.coverArtUrl = coverArtUrl;
+  }
 
-    public Artist getArtist() {
-        return artist;
-    }
+  public Artist getArtist() {
+    return artist;
+  }
 
-    public void setArtist(Artist artist) {
-        this.artist = artist;
-    }
+  public void setArtist(Artist artist) {
+    this.artist = artist;
+  }
 
-    public List<Track> getTracks() {
-        return tracks;
-    }
+  public List<Track> getTracks() {
+    return tracks;
+  }
 
-    public void setTracks(List<Track> tracks) {
-        this.tracks = tracks;
-    }
+  public void setTracks(List<Track> tracks) {
+    this.tracks = tracks;
+  }
 }

@@ -16,85 +16,84 @@ import java.util.List;
 @Table(name = "artists")
 public class Artist {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false, length = 150)
-    private String name;
+  @Column(nullable = false, length = 150)
+  private String name;
 
-    @Column(length = 2000)
-    private String biography;
+  @Column(length = 2000)
+  private String biography;
 
-    @Column(length = 100)
-    private String country;
+  @Column(length = 100)
+  private String country;
 
-    @Column(name = "active_from")
-    private LocalDate activeFrom;
+  @Column(name = "active_from")
+  private LocalDate activeFrom;
 
-    @Column(name = "active_to")
-    private LocalDate activeTo;
+  @Column(name = "active_to")
+  private LocalDate activeTo;
 
-    @OneToMany(mappedBy = "artist")
-    @JsonIgnore
-    private List<Album> albums = new ArrayList<>();
+  @OneToMany(mappedBy = "artist")
+  @JsonIgnore
+  private List<Album> albums = new ArrayList<>();
 
-    public Artist() {
-    }
+  public Artist() {}
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getBiography() {
-        return biography;
-    }
+  public String getBiography() {
+    return biography;
+  }
 
-    public void setBiography(String biography) {
-        this.biography = biography;
-    }
+  public void setBiography(String biography) {
+    this.biography = biography;
+  }
 
-    public String getCountry() {
-        return country;
-    }
+  public String getCountry() {
+    return country;
+  }
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
+  public void setCountry(String country) {
+    this.country = country;
+  }
 
-    public LocalDate getActiveFrom() {
-        return activeFrom;
-    }
+  public LocalDate getActiveFrom() {
+    return activeFrom;
+  }
 
-    public void setActiveFrom(LocalDate activeFrom) {
-        this.activeFrom = activeFrom;
-    }
+  public void setActiveFrom(LocalDate activeFrom) {
+    this.activeFrom = activeFrom;
+  }
 
-    public LocalDate getActiveTo() {
-        return activeTo;
-    }
+  public LocalDate getActiveTo() {
+    return activeTo;
+  }
 
-    public void setActiveTo(LocalDate activeTo) {
-        this.activeTo = activeTo;
-    }
+  public void setActiveTo(LocalDate activeTo) {
+    this.activeTo = activeTo;
+  }
 
-    public List<Album> getAlbums() {
-        return albums;
-    }
+  public List<Album> getAlbums() {
+    return albums;
+  }
 
-    public void setAlbums(List<Album> albums) {
-        this.albums = albums;
-    }
+  public void setAlbums(List<Album> albums) {
+    this.albums = albums;
+  }
 }

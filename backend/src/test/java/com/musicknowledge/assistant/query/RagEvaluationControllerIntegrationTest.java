@@ -21,57 +21,62 @@ import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@TestPropertySource(properties = {
-    "app.embedding.provider=fake",
-    "app.llm.provider=fake",
-    "app.retrieval.native-vector=false"
-})
+@TestPropertySource(
+    properties = {
+      "app.embedding.provider=fake",
+      "app.llm.provider=fake",
+      "app.retrieval.native-vector=false"
+    })
 class RagEvaluationControllerIntegrationTest {
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
+  @Autowired private WebApplicationContext webApplicationContext;
 
-    @Test
-    void evaluationEndpointReturnsPassRates() throws Exception {
-        MockMvc configuredMockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+  @Test
+  void evaluationEndpointReturnsPassRates() throws Exception {
+    MockMvc configuredMockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
-        configuredMockMvc.perform(post("/api/v1/evaluations/rag")
+    configuredMockMvc
+        .perform(
+            post("/api/v1/evaluations/rag")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""
+                .content(
+                    """
                     [{
                       "question": "What year?",
                       "expectedAnswerContains": "1985",
                       "expectedSourceUri": "https://example.test/source"
                     }]
                     """))
-            .andExpect(status().isOk())
-            .andExpect(result -> {
-                String body = result.getResponse().getContentAsString();
-                assertThat(body).contains("\"totalCases\":1", "\"passedCases\":0", "\"answerPassRate\":0.0");
+        .andExpect(status().isOk())
+        .andExpect(
+            result -> {
+              String body = result.getResponse().getContentAsString();
+              assertThat(body)
+                  .contains("\"totalCases\":1", "\"passedCases\":0", "\"answerPassRate\":0.0");
             });
-    }
+  }
 
-    @TestConfiguration
-    static class FakeEvaluationConfiguration {
+  @TestConfiguration
+  static class FakeEvaluationConfiguration {
 
-        @Bean
-        EmbeddingProvider embeddingProvider() {
-            return new EmbeddingProvider() {
-                @Override
-                public String model() {
-                    return "fake-embedding-v1";
-                }
-
-                @Override
-                public List<Float> embed(String text) {
-                    return List.of(1.0f, 0.0f, 0.0f);
-                }
-            };
+    @Bean
+    EmbeddingProvider embeddingProvider() {
+      return new EmbeddingProvider() {
+        @Override
+        public String model() {
+          return "fake-embedding-v1";
         }
 
-        @Bean
-        AnswerGenerator answerGenerator() {
-            return (question, sources) -> "The song was released in 1985.";
+        @Override
+        public List<Float> embed(String text) {
+          return List.of(1.0f, 0.0f, 0.0f);
         }
+      };
     }
+
+    @Bean
+    AnswerGenerator answerGenerator() {
+      return (question, sources) -> "The song was released in 1985.";
+    }
+  }
 }

@@ -11,14 +11,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DocumentChunkRepository extends JpaRepository<DocumentChunk, Long> {
 
-    List<DocumentChunk> findAllByKnowledgeSourceIdOrderByChunkIndex(Long knowledgeSourceId);
+  List<DocumentChunk> findAllByKnowledgeSourceIdOrderByChunkIndex(Long knowledgeSourceId);
 
-    @Query("""
+  @Query(
+      """
         SELECT c FROM DocumentChunk c JOIN FETCH c.knowledgeSource s
         WHERE LOWER(c.content) LIKE LOWER(CONCAT('%', :keyword, '%'))
            OR LOWER(s.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
         """)
-    List<DocumentChunk> findKeywordCandidates(@Param("keyword") String keyword, Pageable pageable);
+  List<DocumentChunk> findKeywordCandidates(@Param("keyword") String keyword, Pageable pageable);
 
-    void deleteAllByKnowledgeSourceId(Long knowledgeSourceId);
+  void deleteAllByKnowledgeSourceId(Long knowledgeSourceId);
 }
